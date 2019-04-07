@@ -11,6 +11,7 @@ class App(Tk):
     game = None
     start_button = None
     cell_size = 0
+    variable = None
 
     simulate_flag = False;
 
@@ -39,6 +40,12 @@ class App(Tk):
         reset_button = Button(self, text="Reset", command=self.reset)
         reset_button.grid(row=1, column=1)
 
+        self.variable = StringVar(self)
+        self.variable.set("10ms") # default value
+
+        w = OptionMenu(self, self.variable, "1ms","10ms", "100ms", "200ms")
+        w.grid(row=2, column=0)
+
         self.cell_size = int(self.canvas_size/self.game.get_grid_size())
 
         self.show_grid()
@@ -53,9 +60,9 @@ class App(Tk):
         for i in range(grid_size):
             for j in range(grid_size):
                 x0 = self.cell_size*j+3
-                x1 = self.cell_size*(j+1)
+                x1 = self.cell_size*(j+1)+1
                 y0 = self.cell_size * i+3
-                y1 = self.cell_size * (i+1)
+                y1 = self.cell_size * (i+1)+1
                 color = 'black'
                 if(grid[i][j] == 1):
                     color = 'white'
@@ -76,6 +83,18 @@ class App(Tk):
             new_text = "Stop simulation"
         else:
             new_text = "Start simulation"
+        timer_string = self.variable.get()
+        if timer_string == "1ms":
+            self.timer = 1
+        elif timer_string == "10ms":
+            self.timer = 10
+        elif timer_string == "100ms":
+            self.timer = 100
+        elif timer_string == "200ms":
+            self.timer = 200
+        else:
+            self.timer = 100
+
 
         self.simulate()
         self.start_button.config(text=new_text)
