@@ -1,22 +1,28 @@
 from functools import reduce
-
+from joblib import Parallel, delayed
 
 class LifeGame(object):
     """docstring for LifeGame."""
     grid_size = 0
     grid=[]
+    new_grid = []
     def __init__(self, grid_size):
         super(LifeGame, self).__init__()
         self.grid_size = grid_size
         self.reset()
 
+    def step_line(self,i):
+        for j in range(self.grid_size):
+            self.new_grid[i][j] = self.update_cell(i,j)
 
     def step(self):
-        new_grid = [[0]*self.grid_size for i in range(self.grid_size)]
-        for i in range(self.grid_size):
-            for j in range(self.grid_size):
-                new_grid[i][j] = self.update_cell(i,j)
-        self.grid = new_grid.copy()
+        self.new_grid = [[0]*self.grid_size for i in range(self.grid_size)]
+
+        Parallel(n_jobs=16, require='sharedmem')(delayed(self.step_line)(i) for i in range(self.grid_size))
+
+        self.grid = self.new_grid.copy()
+
+
 
     def update_cell(self, i, j):
         neighbours = []
